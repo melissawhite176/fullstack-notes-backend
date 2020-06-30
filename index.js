@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const Note = require('./models/note')
 
 app.use(express.json())
 app.use(cors())
@@ -20,24 +22,6 @@ const unknownEndpoint = (request, response) => {
 
 app.use(requestLogger)
 
-//**Connect backend to database **
-const mongoose = require('mongoose')
-
-// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
-//node index.js <password>
-const password = process.argv[2]
-const url =
-  `mongodb+srv://fullstack:${password}@cluster0-klm2a.mongodb.net/note-app?retryWrites=true&w=majority`
-
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-})
-
-const Note = mongoose.model('Note', noteSchema)
 
 let notes = [
   {
@@ -64,15 +48,6 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
 })
 
-//format objects in schema 
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
 //new event handler to fetch notes
 app.get('/api/notes', (request, response) => {
   Note.find({}).then(notes => {
@@ -91,8 +66,8 @@ app.post('/api/notes', (request, response) => {
   const body = request.body
 
   if (!body.content) {
-    return response.status(400).json({ 
-      error: 'content missing' 
+    return response.status(400).json({
+      error: 'content missing'
     })
   }
 
@@ -106,7 +81,7 @@ app.post('/api/notes', (request, response) => {
   notes = notes.concat(note)
 
   response.json(note)
-  
+
 })
 
 app.get('/api/notes/:id', (request, response) => {
@@ -128,7 +103,7 @@ app.delete('/api/notes/:id', (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
