@@ -5,8 +5,8 @@ const cors = require('cors')
 const Note = require('./models/note')
 
 app.use(express.json())
-app.use(cors())
 app.use(express.static('build'))
+app.use(cors())
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -75,11 +75,30 @@ app.post('/api/notes', (request, response) => {
 })
 
 //fetch individual note
-app.get('/api/notes/:id', (request, response) => {
-  Note.findById(request.params.id).then(note => {
-    response.json(note)
-  })
+app.get('/api/notes/:id', (request, response, next) => {
+  Note.findById(request.params.id)
+    .then(note => {
+      if (note) {
+        response.json(note)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
+
+//error handler
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if(error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const generateId = () => {
   const maxId = notes.length > 0
