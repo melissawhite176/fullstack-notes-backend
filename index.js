@@ -29,7 +29,7 @@ app.post('/api/notes', (request, response) => {
 })
 
 //delete note
-app.delete('api/notes/:id', (request, response, next) => {
+app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
