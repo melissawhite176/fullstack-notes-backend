@@ -3,7 +3,6 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const Note = require('./models/note')
-const { response } = require('express')
 
 app.use(express.static('build'))
 app.use(express.json())
@@ -23,17 +22,17 @@ app.post('/api/notes', (request, response, next) => {
     .save()
     .then(savedNote => {
       return savedNote.toJSON()
-  })
-  .then(savedAndFormattedNote => {
-    response.json(savedAndFormattedNote)
-  })
-  .catch(error => next(error))
+    })
+    .then(savedAndFormattedNote => {
+      response.json(savedAndFormattedNote)
+    })
+    .catch(error => next(error))
 })
 
 //delete note
 app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -52,12 +51,12 @@ app.put('/api/notes/:id', (request, response, next) => {
   }
   Note.findByIdAndUpdate(request.params.id, note, { new: true })
     .then(updatedNote => {
-      console.log("response:", updatedNote)
+      console.log('response:', updatedNote)
       response.json(updatedNote)
     })
     .catch(error => {
       console.log('error:', error)
-      next(error)  
+      next(error)
     })
 })
 
