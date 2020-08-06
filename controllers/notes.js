@@ -17,10 +17,9 @@ const Note = require('../models/note')
 /*path in the route handler has shortened to ('/')
 the router middleware was used to define "related routes"
 defined in app.js -> app.use('/api/notes', notessRouter)*/
-notesRouter.get('/', (request, response) => {
-  Note.find({}).then(notes => {
-    response.json(notes)
-  })
+notesRouter.get('/', async (request, response) => {
+  const notes = await Note.find({})
+  response.json(notes)
 })
 
 //-------FETCH INDIVIDUAL NOTE----------
