@@ -13,10 +13,14 @@ const app = require('../app')
 
 const api= supertest(app)
 
+
 /*The async/await syntax is related to the fact that
 making a request to the API is an asynchronous operation.
 The Async/await syntax can be used for writing
 asynchronous code with the appearance of synchronous code.*/
+
+
+//------------------------
 test('notes are returned as json', async () => {
   await api
     .get('/api/notes')
@@ -24,6 +28,21 @@ test('notes are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
+//------------------------
+test('there are two notes', async () => {
+  const response = await api.get('/api/notes')
+
+  expect(response.body).toHaveLength(2)
+})
+
+//------------------------
+test('the first note is about HTTP methods', async () => {
+  const response = await api.get('/api/notes')
+
+  expect(response.body[0].content).toBe('HTML is Easy')
+})
+
+//------------------------
 /*Once all the tests (there is currently only one) have finished running
 we have to close the database connection used by Mongoose.
 This can be easily achieved with the afterAll method */
