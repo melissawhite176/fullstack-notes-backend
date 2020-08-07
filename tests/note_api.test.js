@@ -7,39 +7,23 @@ and verifies that the request is responded to with the status code 200.
 The test also verifies that the Content-Type header is set to application/json,
 indicating that the data is in the desired format.*/
 
-const mongoose = require('mongoose')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
+const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
+
 const Note = require('../models/note')
-
-//------------------------
-/*In order to make our tests more robust,we have to reset the database
-and generate the needed test data in a controlled manner before we run the tests.
-
-The database is cleared out at the beginning, and after that we save the two notes
-stored in the initialNotes array to the database. Doing this, we ensure that the
-database is in the same state before every test is run.*/
-const initialNotes = [
-  {
-    content: 'HTML is easy',
-    important: false,
-  },
-  {
-    content: 'Browser can execute only Javascript',
-    imporant: true,
-  },
-]
 
 //------------------------
 //Let's initialize the database before every test with the beforeEach function
 beforeEach(async () => {
   await Note.deleteMany({})
 
-  let noteObject = new Note(initialNotes[0])
+  let noteObject = new Note(helper.initialNotes[0])
   await noteObject.save()
 
-  noteObject = new Note(initialNotes[1])
+  noteObject = new Note(helper.initialNotes[1])
   await noteObject.save()
 })
 
@@ -60,7 +44,7 @@ test('notes are returned as json', async () => {
 test('all notes are returned', async () => {
   const response = await api.get('/api/notes')
 
-  expect(response.body).toHaveLength(initialNotes.length)
+  expect(response.body).toHaveLength(helper.initialNotes.length)
 })
 
 //------------------------
@@ -75,7 +59,53 @@ test('a specific note is within the returned notes', async () => {
 })
 
 //------------------------
-/*Once all the tests (there is currently only one) have finished running
+/*Let's write a test that adds a new note and verifies that the amount of notes returned
+by the API increases, and that the newly added note is in the list. */
+
+test('a valid note can be added', async () => {
+  const newNote = {
+    content: 'async/await simplifies making async calls',
+    important: true,
+  }
+
+  await api
+    .post('/api/notes')
+    .send(newNote)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const notesAtEnd = await helper.notesInDb()
+  expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
+
+  const contents = notesAtEnd.map(r => r.content)
+  expect(contents).toContain(
+    'async/await simplifies making async calls'
+  )
+})
+
+//------------------------
+/*Let's also write a test that verifies that a note without content
+will not be saved into the database.*/
+
+test('note without content is not added', async () => {
+  jest.setTimeout(30000)
+
+  const newNote = {
+    important: true
+  }
+
+  await api
+    .post('/api/notes')
+    .send(newNote)
+    .expect(500)
+
+  const notesAtEnd = await helper.notesInDb()
+
+  expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+})
+
+//------------------------
+/*Once all the tests have finished running
 we have to close the database connection used by Mongoose.
 This can be easily achieved with the afterAll method */
 afterAll(() => {
