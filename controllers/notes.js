@@ -39,7 +39,7 @@ notesRouter.get('/id:', (request, response, next) => {
 })
 
 //------CREATE NEW NOTE-----------
-notesRouter.post('/', (request, response, next) => {
+notesRouter.post('/', async (request, response, next) => {
   const body = request.body
 
   /*note constructor function to create blog object
@@ -50,12 +50,8 @@ notesRouter.post('/', (request, response, next) => {
     date: new Date()
   })
 
-  note
-    .save()
-    .then(savedNote => {
-      response.json(savedNote)
-    })
-    .catch(error => next(error))
+  const savedNote = await note.save()
+  response.json(savedNote)
 })
 
 //--------DELETE INDIVIDUAL NOTE----------
