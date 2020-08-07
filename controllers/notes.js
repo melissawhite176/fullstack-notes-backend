@@ -50,8 +50,12 @@ notesRouter.post('/', async (request, response, next) => {
     date: new Date()
   })
 
-  const savedNote = await note.save()
-  response.json(savedNote)
+  try {
+    const savedNote = await note.save()
+    response.json(savedNote)
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 //--------DELETE INDIVIDUAL NOTE----------
