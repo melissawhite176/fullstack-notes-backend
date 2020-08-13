@@ -26,20 +26,17 @@ notesRouter.get('/', async (request, response) => {
 /*path in the route handler has shortened to ('/:id')
 /the router middleware was used to define "related routes"
 /defined in app.js -> app.use('/api/notes', notesRouter)*/
-notesRouter.get('/:id', (request, response, next) => {
-  Note.findById(request.params.id)
-    .then(note => {
-      if (note) {
-        response.json(note)
-      } else {
-        response.status(404).end
-      }
-    })
-    .catch(error => next(error))
+notesRouter.get('/:id', async (request, response) => {
+  const note = await Note.findById(request.params.id)
+  if (note) {
+    response.json(note)
+  } else {
+    response.status(404).end
+  }
 })
 
 //------CREATE NEW NOTE-----------
-notesRouter.post('/', async (request, response, next) => {
+notesRouter.post('/', async (request, response) => {
   const body = request.body
 
   /*note constructor function to create blog object
@@ -47,15 +44,11 @@ notesRouter.post('/', async (request, response, next) => {
   const note = new Note({
     content: body.content,
     important: body.important || false,
-    date: new Date()
+    date: new Date(),
   })
 
-  try {
-    const savedNote = await note.save()
-    response.json(savedNote)
-  } catch (exception) {
-    next(exception)
-  }
+  const savedNote = await note.save()
+  response.json(savedNote)
 })
 
 //--------DELETE INDIVIDUAL NOTE----------
