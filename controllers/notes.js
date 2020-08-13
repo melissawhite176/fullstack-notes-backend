@@ -62,14 +62,9 @@ notesRouter.post('/', async (request, response, next) => {
 /*path in the route handler has shortened to ('/:id')
 /the router middleware was used to define "related routes"
 /defined in app.js -> app.use('/api/notes', notesRouter)*/
-notesRouter.delete('/:id', async (request, response, next) => {
-  try {
-    await Note.findByIdAndRemove(request.params.id)
-    response.status(204).end()
-  }
-  catch (exception) {
-    next(exception)
-  }
+notesRouter.delete('/:id', async (request, response) => {
+  await Note.findByIdAndRemove(request.params.id)
+  response.status(204).end()
 })
 
 //--------UPDATE INDIVIDUAL NOTE----------
