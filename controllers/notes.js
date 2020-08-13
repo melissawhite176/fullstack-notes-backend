@@ -26,8 +26,8 @@ notesRouter.get('/', async (request, response) => {
 /*path in the route handler has shortened to ('/:id')
 /the router middleware was used to define "related routes"
 /defined in app.js -> app.use('/api/notes', notesRouter)*/
-notesRouter.get('/id:', (request, response, next) => {
-  notesRouter.findById(request.params.id)
+notesRouter.get('/:id', (request, response, next) => {
+  Note.findById(request.params.id)
     .then(note => {
       if (note) {
         response.json(note)
