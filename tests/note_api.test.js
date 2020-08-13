@@ -34,6 +34,8 @@ asynchronous code with the appearance of synchronous code.*/
 
 //------------------------
 test('notes are returned as json', async () => {
+  jest.setTimeout(30000)
+
   await api
     .get('/api/notes')
     .expect(200)
@@ -49,6 +51,8 @@ test('all notes are returned', async () => {
 
 //------------------------
 test('a specific note is within the returned notes', async () => {
+  jest.setTimeout(30000)
+
   const response = await api.get('/api/notes')
 
   const contents = response.body.map(r => r.content)
@@ -102,6 +106,41 @@ test('note without content is not added', async () => {
   const notesAtEnd = await helper.notesInDb()
 
   expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+})
+//------------------------
+test('a specific note can be viewed', async () => {
+  jest.setTimeout(30000)
+
+  const notesAtStart = await helper.notesInDb()
+  const noteToView = notesAtStart[0]
+
+  // const resultNote =
+  await api
+    .get(`/api/notes/${noteToView.id}`)
+    .expect(200)
+  // .expect('Content-Type', /application\/json/)
+
+  // expect(resultNote.body).toEqual(noteToView)
+})
+
+//------------------------
+test('a note can be deleted', async () => {
+  const notesAtStart = await helper.notesInDb()
+  const noteToDelete = notesAtStart[0]
+
+  await api
+    .delete(`/api/notes/${noteToDelete.id}`)
+    .expect(204)
+
+  const notesAtEnd = await helper.notesInDb()
+
+  expect(notesAtEnd).toHaveLength(
+    helper.initialNotes.length - 1
+  )
+
+  const contents = notesAtEnd.map(r => r.content)
+
+  expect(contents).not.toContain(noteToDelete.content)
 })
 
 //------------------------
