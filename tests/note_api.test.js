@@ -17,6 +17,11 @@ const Note = require('../models/note')
 
 //------------------------
 //Let's initialize the database before every test with the beforeEach function
+/*Promise.all- Promise.all executes the promises it receives in parallel.
+If the promises need to be executed in a particular order, this will be problematic.
+In situations like this,the operations can be executed inside of a for...of block,
+that guarantees a specific execution order.*/
+
 beforeEach(async () => {
   await Note.deleteMany({})
 
