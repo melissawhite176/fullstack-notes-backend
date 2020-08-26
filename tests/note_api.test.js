@@ -93,8 +93,6 @@ describe('viewing a specific note', () => {
 
     const validNonexistingId = await helper.nonExistingId()
 
-    console.log('validNonexistingId', validNonexistingId)
-
     await api
       .get(`/api/notes/${validNonexistingId}`)
       .expect(404)
@@ -213,6 +211,27 @@ describe('deletion of a note', () => {
 
     expect(contents).not.toContain(noteToDelete.content)
   })
+})
+
+test('a note can be updated', async () => {
+  const notesAtStart = await helper.notesInDb()
+  const noteToUpdate = notesAtStart[0]
+
+  const update = { content: 'HTML is VERY easy' }
+
+  await api
+    .put(`/api/notes/${noteToUpdate.id}`)
+    .send(update)
+    .expect(200)
+
+  const notesAtEnd = await helper.notesInDb()
+
+  expect(notesAtEnd).toHaveLength(
+    helper.initialNotes.length
+  )
+
+  const contents = notesAtEnd.map(r => r.content)
+  expect(contents).toContain(update.content)
 })
 
 //------------------------
