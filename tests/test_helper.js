@@ -14,7 +14,7 @@ const initialNotes = [
   },
   {
     content: 'Browser can execute only Javascript',
-    imporant: true,
+    important: true,
   },
 ]
 

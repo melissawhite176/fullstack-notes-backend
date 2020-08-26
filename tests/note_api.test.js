@@ -217,7 +217,10 @@ test('a note can be updated', async () => {
   const notesAtStart = await helper.notesInDb()
   const noteToUpdate = notesAtStart[0]
 
-  const update = { content: 'HTML is VERY easy' }
+  const update = {
+    content: 'HTML is VERY easy',
+    important: true
+  }
 
   await api
     .put(`/api/notes/${noteToUpdate.id}`)

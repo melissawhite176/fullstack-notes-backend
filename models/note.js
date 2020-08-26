@@ -12,7 +12,10 @@ const noteSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
-  important: Boolean,
+  important: {
+    type: Boolean,
+    required: false
+  }
 })
 
 noteSchema.set('toJSON', {
