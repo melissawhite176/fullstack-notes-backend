@@ -4,6 +4,7 @@ const express = require('express')
 require('express-async-errors')
 const app = express()
 const cors = require('cors')
+const usersRouter = require('./controllers/users')
 const notesRouter = require('./controllers/notes')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
@@ -29,7 +30,9 @@ app.use(express.json())
 //request logger middleware
 app.use(middleware.requestLogger)
 
-//defining router for blogs route (controllers/blogs.js)
+//defining router for users route (controllers/users.js)
+app.use('/api/users', usersRouter)
+//defining router for notes route (controllers/notes.js)
 app.use('/api/notes', notesRouter)
 
 //unknown endpoint middleware
