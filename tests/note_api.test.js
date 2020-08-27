@@ -257,7 +257,7 @@ describe('when there is initially one user in db', () => {
     const newUser = {
       username: 'mluukkai',
       name: 'Matti Luukkainen',
-      passowrd: 'salainen',
+      password: 'salainen',
     }
 
     await api
@@ -276,10 +276,12 @@ describe('when there is initially one user in db', () => {
   test('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await helper.usersInDb()
 
+    console.log('usersAtStart:', usersAtStart)
+
     const newUser = {
       username: 'root',
       name: 'Superuser',
-      passowrd: 'salainen',
+      password: 'salainen',
     }
 
     const result = await api
@@ -288,7 +290,7 @@ describe('when there is initially one user in db', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/)
 
-    expect(result.body.error).toContaint('`username` to be unique')
+    expect(result.body.error).toContain('`username` to be unique')
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
