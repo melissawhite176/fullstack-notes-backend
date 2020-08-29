@@ -20,7 +20,8 @@ const Note = require('../models/note')
 the router middleware was used to define "related routes"
 defined in app.js -> app.use('/api/notes', notessRouter)*/
 notesRouter.get('/', async (request, response) => {
-  const notes = await Note.find({})
+  const notes = await Note
+    .find({}).populate('user', { username: 1, name: 1 })
   response.json(notes)
 })
 
