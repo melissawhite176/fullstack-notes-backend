@@ -1,5 +1,7 @@
 //CONTROLLERS/NOTES.JS -> all of the routes related to notes in this directory
 
+const User = require('../models/user')
+
 /*A router object is an isolated instance of middleware and routes.
 You can think of it as a “mini-application,” capable only of performing middleware and routing functions.
 Every Express application has a built-in app router.
@@ -39,15 +41,21 @@ notesRouter.get('/:id', async (request, response) => {
 notesRouter.post('/', async (request, response) => {
   const body = request.body
 
+  const user = await User.findById(body.userId)
+
   /*note constructor function to create blog object
   /properties match the Blog schema in model/blog.js*/
   const note = new Note({
     content: body.content,
     important: body.important || false,
     date: new Date(),
+    user: user._id
   })
 
   const savedNote = await note.save()
+  user.notes = user.notes.concat(savedNote._id)
+  await user.save()
+
   response.json(savedNote)
 })
 

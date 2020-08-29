@@ -117,9 +117,19 @@ describe('addition of a new note', () => {
   by the API increases, and that the newly added note is in the list. */
 
   test('a valid note can be added', async () => {
+
+    const usersAtStart = await helper.usersInDb()
+    const firstUser = usersAtStart[0]
+    const firstUserId = firstUser.id
+
+    console.log('usersAtStart:', usersAtStart)
+    console.log('firstUser:', firstUser)
+    console.log('firstUserId:', firstUserId)
+
     const newNote = {
       content: 'async/await simplifies making async calls',
       important: true,
+      userId: firstUserId
     }
 
     await api
@@ -130,6 +140,8 @@ describe('addition of a new note', () => {
 
     const notesAtEnd = await helper.notesInDb()
     expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
+
+    console.log('notesAtEnd:', notesAtEnd)
 
     const contents = notesAtEnd.map(r => r.content)
     expect(contents).toContain(
@@ -275,8 +287,6 @@ describe('when there is initially one user in db', () => {
 
   test('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await helper.usersInDb()
-
-    console.log('usersAtStart:', usersAtStart)
 
     const newUser = {
       username: 'root',
